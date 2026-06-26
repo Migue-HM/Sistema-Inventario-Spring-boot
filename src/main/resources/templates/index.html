@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/cabecero::cabecero-seccion(titulo='Inventario')}"/>
+<body>
+
+<div th:replace="~{fragmentos/navegacion::navegacion-seccion}"/>
+
+<div class="container my-4">
+
+    <div class="mb-4">
+        <h3 class="fw-bold text-dark">Sistema de Inventarios</h3>
+        <hr class="text-muted">
+    </div>
+
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> <span th:text="${mensajeError}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>¡Éxito!</strong> <span th:text="${mensajeExito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="table-responsive mt-3">
+        <table class="table table-hover align-middle">
+            <thead class="table-light text-center">
+            <tr>
+                <th scope="col" style="width: 5%">#</th>
+                <th scope="col" class="text-start">Producto</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Estatus</th>
+                <th sec:authorize="hasRole('ADMIN')" scope="col" style="width: 20%">Gestión</th>
+                <th sec:authorize="hasRole('ADMIN')" scope="col" style="width: 15%">Existencias</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(productos)}">
+                <td colspan="7" class="text-center py-4 text-muted">No hay productos registrados.</td>
+            </tr>
+
+            <tr th:each="prod: ${productos}" class="text-center">
+                <td th:text="${prod.idProducto}" scope="row" class="text-muted small"></td>
+                <td th:text="${prod.nombre}" class="text-start fw-semibold"></td>
+                <td th:text="'$' + ${prod.precio}"></td>
+                <td th:text="${prod.cantidad}"></td>
+                <td>
+                    <span th:if="${prod.activo}" class="badge rounded-pill px-3 py-2 fw-semibold" style="background-color: #e6f4ea; color: #137333; font-size: 0.85rem;">
+                        Activo </span>
+                    <span th:unless="${prod.activo}" class="badge rounded-pill px-3 py-2 fw-semibold" style="background-color: #f1f3f4; color: #5f6368; font-size: 0.85rem;">
+                        Inactivo </span>
+                </td>
+
+                <td sec:authorize="hasRole('ADMIN')">
+                    <div class="d-flex justify-content-center align-items-center gap-3">
+                        <a th:href="@{/editar/{id}(id=${prod.idProducto})}" class="btn btn-sm btn-primary px-3">
+                            Editar
+                        </a>
+
+                        <form th:if="${prod.activo}" th:action="@{/baja/{id}(id=${prod.idProducto})}" method="post"
+                              class="d-inline m-0">
+                            <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
+                                Desactivar
+                            </button>
+                        </form>
+
+                        <form th:unless="${prod.activo}" th:action="@{/activar/{id}(id=${prod.idProducto})}"
+                              method="post" class="d-inline m-0">
+                            <button type="submit"
+                                    class="btn btn-sm btn-link text-success text-decoration-none p-0 fw-bold">
+                                Activar
+                            </button>
+                        </form>
+                    </div>
+                </td>
+
+                <td sec:authorize="hasRole('ADMIN')">
+                    <button type="button" class="btn btn-sm btn-link text-primary text-decoration-none p-0 fw-semibold"
+                            data-bs-toggle="modal"
+                            th:data-bs-target="'#modalStock' + ${prod.idProducto}">
+                        Inventario
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:each="producto : ${productos}" class="modal fade" th:id="'modalStock' + ${producto.idProducto}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form th:action="@{/aumentar}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold" th:text="'Aumentar Inventario: ' + ${producto.nombre}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idProducto" th:value="${producto.idProducto}">
+
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Cantidad actual en almacén:</p>
+                        <h4 class="fw-bold text-dark" th:text="${producto.cantidad}"></h4>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold text-secondary">Cantidad a agregar</label>
+                        <input type="number" min="1" class="form-control" name="cantidad" placeholder="Ej. 10" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-sm btn-success px-3">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragmentos/pie-pagina::pie-pagina-seccion}"/>
+
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragmentos/cabecero::cabecero-seccion(titulo='Inventario')}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:replace="~{fragmentos/navegacion::navegacion-seccion}"/>
+<div class="container">
+    <div class="container text-center" style="margin:30px">
+        <h3>Sistema de Inventarios </h3>
+    </div>
+
+    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show">
+        <strong>Error:</strong>
+        <span th:text="${mensajeError}"></span>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show">
+        <strong>Exito:</strong>
+        <span th:text="${mensajeExito}"></span>
+
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="container">
+        <table class="table table-striped table-hover aling-middel table-border">
+            <thead class="table-dark text-center">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Estatus</th>
+                <th sec:authorize="hasRole('ALMACENISTA')" scope="col">Inventarop</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="productos: ${productos}" class="text-center">
+                <th th:text="${productos.idProducto}" scope="row"></th>
+                <td th:text="${productos.nombre}"></td>
+                <td th:text="${productos.precio}"></td>
+                <td th:text="${productos.cantidad}"></td>
+                <td th:text="${productos.activo}"></td>
+                <td sec:authorize="hasRole('ALMACENISTA')" class="text-center">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                            th:data-bs-target="'#modalStockBaja' + ${productos.idProducto}">
+                        Baja
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para quitar el inventario de un producto-->
+<div th:each="producto : ${productos}" class="modal fade" th:id="'modalStockBaja' + ${producto.idProducto}"
+     tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/quitar}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="'Quitar al stock: ' + ${producto.nombre}"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="idProducto" th:value="${producto.idProducto}">
+                    <p>Cantidad actual: <strong th:text="${producto.cantidad}"></strong></p>
+                    <label class="form-label">Cantidad a quitar</label>
+                    <input type="number" min="1" class="form-control" name="cantidad" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Quitar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragmentos/pie-pagina::pie-pagina-seccion}"/>
+
+</body>
+</html>
