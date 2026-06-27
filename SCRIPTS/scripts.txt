@@ -1,0 +1,23 @@
+PRODUCTOS QUE TENGAN SOLO UNA VENTA.
+
+SELECT DISTINCT p.idProducto, p.nombre, p.precio
+FROM productos p
+INNER JOIN ventas v ON v.idProducto = p.idProducto;
+
+
+TRAER TODOS LOS PRODUCTOS QUE TENGAN VENTAS Y LA CANTIDAD TOTAL DE PRODUCTOS VENDIDOS.
+
+SELECT p.idProducto, p.nombre, SUM(v.cantidad) AS cantidad_total
+FROM productos p
+INNER JOIN ventas v ON v.idProducto = p.idProducto
+GROUP BY p.idProducto, p.nombre;
+
+
+TRAER TOODOS LOS PRODUCTOS (INDEPENDIENTEMENTE DE SI TIENE VENTAS O NO) Y LA SUMA TOTAL $ VENDIDOS POT PRODCUTOS
+
+SELECT p.idProducto, p.nombre,
+       COALESCE(SUM(v.cantidad * p.precio), 0) AS total_vendido
+FROM productos p
+LEFT JOIN ventas v ON v.idProducto = p.idProducto
+GROUP BY p.idProducto, p.nombre;
+

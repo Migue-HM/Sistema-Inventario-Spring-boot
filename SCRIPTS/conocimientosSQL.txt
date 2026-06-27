@@ -1,0 +1,22 @@
+1. CONOCIMIENTOS SQL
+1.1) Describe el funcionamiento general de la sentencia JOIN.
+
+El JOIN sirve para poder unir tablas, sirve para poder sacaar informacion de tablas que tienen relacion entre si
+lo que permite obtener datos relacionados en una sola peticion sin necesidad de repetir informacion en una BD
+
+
+1.2) ¿Cuáles son los tipos de JOIN y cuál es el funcionamiento de los mismos?
+Existe diferentes tipos de JOIN, esta el INNER JOIN que muestra los datos que coincidan en las tablas
+El LEFT JOIN que muestra los registros de la tabla izquierda y los relacionados con la tabla derecha.
+Tambien el RIGHT JOIN que un caso similar al LEFY JOIN nada mas que esta vez es con la tabla derecha.
+El FULL JOIN  que muestra toda la informacion de las tablas aun asi no tengan relacion los datos.
+
+1.3) ¿Cuál el funcionamiento general de los TRIGGER y qué propósito tienen?
+
+Un Trigger es un proceso que se ejecuta automáticamente cuando ocurre un evento en alguna tabla como el insertar,
+actualizar o eliminar registros, sirve para automatizar tareas, mantener la
+integridad de los datos y realizar acciones sin que el usuario haga algo.
+
+1.4) ¿Qué es y para qué sirve un STORED PROCEDURE?
+
+Un Stored Procedure son instrucciones SQL almacenadas en la base de datos que pueden ejecutarse cuando se necesiten.
